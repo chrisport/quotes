@@ -3,37 +3,36 @@
     <h1>Quotes</h1>
     Collection of quotes and my playground for <a href="https://vuejs.org/">vue.js</a>.
     <hr>
-    <span class="filters"><b-form-input v-model="authorFilter"
-                                        type="text"
-                                        placeholder="Author..."></b-form-input>
-    <b-form-input v-model="bookFilter"
-                  type="text"
-                  placeholder="Book..."></b-form-input>
-      </span>
+    <b-form inline class="filters">
+      <b-form-input v-model="authorFilter"
+                    type="text"
+                    placeholder="Author..."></b-form-input>
+      <b-form-input v-model="bookFilter"
+                    type="text"
+                    placeholder="Book..."></b-form-input>
+    </b-form>
     <ul class='list-group'>
-      <li v-for='quote in displayedQuotes' @click="selectedQuote = quote" v-b-modal.quote-detail>
-        <span class="quote">{{quote.content}}</span></br>
-        -
-        <a v-bind:href='quote.book.author.link' target='_blank'>{{quote.book.author.name}}</a>,
-        <a v-bind:href='quote.book.link' target='_blank'>{{quote.book.title}}</a> (published {{quote.book.year}})
+      <li v-for='quote in displayedQuotes'>
+        <div v-on:mouseenter="selectedQuote = quote" v-on:mouseleave="selectedQuote = null">
+          <div class="quote">{{quote.content}}</div>
+          <div class="footer">
+            <p class="alignleft"></p>
+            <p class="aligncenter">
+              - <a v-bind:href='quote.book.author.link' target='_blank'>{{quote.book.author.name}}</a>,
+              <a v-bind:href='quote.book.link' target='_blank'>{{quote.book.title}}</a> ({{quote.book.year}})
+            </p>
+            <p class="quote-options alignright" v-if="selectedQuote == quote">
+              <b-btn><i class="fa fa-link icon-big"/></b-btn>
+              </b-btn>
+              <b-btn
+                  v-clipboard:copy="selectedPermalink"
+                  v-clipboard:success="copySuccess"
+                  v-clipboard:error="copyError"><i class="fa fa-copy icon-big"/></b-btn>
+            </p>
+          </div>
+        </div>
       </li>
     </ul>
-    <b-modal id="quote-detail"
-             ok-title="Close">
-
-      <span class="quote">{{selectedQuote.content}}</span></br>
-      -
-      <a v-bind:href='selectedQuote.book.author.link' target='_blank'>{{selectedQuote.book.author.name}}</a>,
-      <a v-bind:href='selectedQuote.book.link' target='_blank'>{{selectedQuote.book.title}}</a> (published
-      {{selectedQuote.book.year}})
-      <template slot="modal-footer">
-        <b-btn
-            v-clipboard:copy="selectedPermalink"
-            v-clipboard:success="copySuccess"
-            v-clipboard:error="copyError"><i class="fa fa-copy icon-big"/></b-btn>
-        <b-btn><i class="fa fa-link icon-big"/></b-btn>
-      </template>
-    </b-modal>
   </div>
 </template>
 
@@ -101,7 +100,7 @@
       }
     },
     methods: {
-      updateDisplayedQuotes(){
+      updateDisplayedQuotes: function () {
         var filteredQuotes = this.quotes;
         let query = {}
         if (this.authorFilter) {
@@ -147,7 +146,10 @@
   }
 
   .quote {
-    font-size: 1.5em;
+    font-size: 1.3em;
+    max-width: 100%;
+    margin-bottom: 1em;;
+    display: inline-block;
   }
 
   .filters {
@@ -155,14 +157,45 @@
   }
 
   li {
-    margin: 1.7em;
+    margin: 1.7em auto;
+    overflow: hidden;
+    width: 60%;
   }
 
   a {
     color: #1b402a;
   }
 
+  .footer {
+    min-height: 3em;
+  }
+
+  .quote-options {
+    float: right;
+    display: inline-block;
+    margin-top: -0.5em;
+  }
+
   .icon-big {
     font-size: 1em;
   }
+
+  .alignleft {
+    float: left;
+    width: 33.33333%;
+    text-align: left;
+  }
+
+  .alignright {
+    float: left;
+    width: 33.33333%;
+    text-align: right;
+  }
+
+  .aligncenter {
+    float: left;
+    width: 33.33333%;
+    text-align: center;
+  }
+
 </style>
