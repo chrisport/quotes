@@ -3,16 +3,34 @@
     <h1>Quotes</h1>
     Collection of quotes and my playground for <a href="https://vuejs.org/">vue.js</a>.
     <hr>
-    <b-form-input v-model="authorFilter"
-                  type="text"
-                  placeholder="Author..."></b-form-input>
-    <b-form-input v-model="bookFilter"
-                  type="text"
-                  placeholder="Book..."></b-form-input>
+    <b-form inline class="filters">
+      <b-form-input v-model="authorFilter"
+                    type="text"
+                    placeholder="Author..."></b-form-input>
+      <b-form-input v-model="bookFilter"
+                    type="text"
+                    placeholder="Book..."></b-form-input>
+    </b-form>
     <ul class='list-group'>
-      <li v-for='quote in displayedQuotes'><span class="quote">{{quote.content}}</span></br>-
-        <a v-bind:href='quote.book.author.link' target='_blank'>{{quote.book.author.name}}</a>,
-        <a v-bind:href='quote.book.link' target='_blank'>{{quote.book.title}}</a> (published {{quote.book.year}})
+      <li v-for='quote in displayedQuotes'>
+        <div v-on:mouseenter="selectedQuote = quote" v-on:mouseleave="selectedQuote = null">
+          <div class="quote">{{quote.content}}</div>
+          <div class="footer">
+            <p class="alignleft"></p>
+            <p class="aligncenter">
+              - <a v-bind:href='quote.book.author.link' target='_blank'>{{quote.book.author.name}}</a>,
+              <a v-bind:href='quote.book.link' target='_blank'>{{quote.book.title}}</a> ({{quote.book.year}})
+            </p>
+            <p class="quote-options alignright" v-if="selectedQuote == quote">
+              <b-btn><i class="fa fa-link icon-big"/></b-btn>
+              </b-btn>
+              <b-btn
+                  v-clipboard:copy="selectedPermalink"
+                  v-clipboard:success="copySuccess"
+                  v-clipboard:error="copyError"><i class="fa fa-copy icon-big"/></b-btn>
+            </p>
+          </div>
+        </div>
       </li>
     </ul>
   </div>
@@ -59,24 +77,41 @@
         },
         {
           book: books.derFall,
-          content: 'Test 3',
+          content: 'Gewiss sah ich mein Versagen immer ein und bedauerte es. Und doch fuhr ich fort, es mit recht verdienstlicher Beharrlichkeit zu vergessen. Über die Mitmenschen hingegen saß ich in meinem Herzen unablässig zu Gericht. Das finden Sie sicher empörend? Sie denken vielleicht, es sei nicht logisch? Es geht aber nicht darum, logisch zu sein.  Es geht darum, zwischen den Maschen hindurchzuschlüpfen, und vor allem, o ja, vor allem darum, sich dem Urteil zu entziehen. Ich sage nicht, sich der Strafe zu entziehen, denn die Strafe ohne Urteil ist erträglich. Sie hat übrigens einen Namen, der für unsere Unschuld bürgt: das Unglück.',
+          added: '4.2.17'
+        },
+        {
+          book: books.derFall,
+          content: 'Lächeln Sie nicht, diese Wahrheit ist nicht so selbstverständlich, wie sie scheint. Selbstverständliche Wahrheiten nent man die, die man zuletzt entdeckt hat, das ist alles.',
+          added: '4.2.17'
+        },
+        {
+          book: books.derFall,
+          content: 'Wissen Sie zum Beispiel, warum man ihn gekreuzigt hat, ihn, an den Sie jetzt vielleicht denken? Nun, dafür gab es eine Menge Gründe. Es fehlt nie an Gründen, einen Menschen umzubringen. Im Gegenteil, es ist unmöglich sein Weiterleben zu rechtfertigen.',
           added: '4.2.17'
         }]
-      const authorFilter = null
-      const bookFilter = null
-      const displayedQuotes = quotes
-      return {quotes, displayedQuotes, authorFilter, bookFilter}
+
+      return {
+        quotes: quotes,
+        displayedQuotes: quotes,
+        bookFilter: null,
+        authorFilter: null,
+        selectedQuote: quotes[0]
+      }
     },
     methods: {
-      updateDisplayedQuotes(){
+      updateDisplayedQuotes: function () {
         var filteredQuotes = this.quotes;
+        let query = {}
         if (this.authorFilter) {
+          query.author = this.authorFilter
           const af = this.authorFilter
           filteredQuotes = filteredQuotes.filter(function (q) {
             return q.book.author.name.includes(af)
           })
         }
         if (this.bookFilter) {
+          query.book = this.authorFilter
           const bf = this.bookFilter
           filteredQuotes = filteredQuotes.filter(function (q) {
             return q.book.title.includes(bf)
@@ -111,7 +146,10 @@
   }
 
   .quote {
-    font-size: 1.5em;
+    font-size: 1.3em;
+    max-width: 100%;
+    margin-bottom: 1em;;
+    display: inline-block;
   }
 
   .filters {
@@ -119,10 +157,45 @@
   }
 
   li {
-    margin: 1.7em;
+    margin: 1.7em auto;
+    overflow: hidden;
+    width: 60%;
   }
 
   a {
     color: #1b402a;
   }
+
+  .footer {
+    min-height: 3em;
+  }
+
+  .quote-options {
+    float: right;
+    display: inline-block;
+    margin-top: -0.5em;
+  }
+
+  .icon-big {
+    font-size: 1em;
+  }
+
+  .alignleft {
+    float: left;
+    width: 33.33333%;
+    text-align: left;
+  }
+
+  .alignright {
+    float: left;
+    width: 33.33333%;
+    text-align: right;
+  }
+
+  .aligncenter {
+    float: left;
+    width: 33.33333%;
+    text-align: center;
+  }
+
 </style>
