@@ -22,12 +22,9 @@
               <a v-bind:href='quote.book.link' target='_blank'>{{quote.book.title}}</a> ({{quote.book.year}})
             </p>
             <p class="quote-options alignright" v-if="selectedQuote == quote">
-              <b-btn><i class="fa fa-link icon-big"/></b-btn>
-              </b-btn>
-              <b-btn
-                  v-clipboard:copy="selectedPermalink"
-                  v-clipboard:success="copySuccess"
-                  v-clipboard:error="copyError"><i class="fa fa-copy icon-big"/></b-btn>
+              <b-btn id="copy-button"
+                     v-clipboard:copy="quoteAsCopy(selectedQuote)"><i class="fa fa-copy icon-big"/></b-btn>
+              <b-btn v-clipboard:copy="quoteLink(selectedQuote)"><i class="fa fa-link icon-big"/></b-btn>
             </p>
           </div>
         </div>
@@ -66,26 +63,31 @@
       }
       const quotes = [
         {
+          id: 0,
           book: books.demian,
           content: 'Wenn wir einen Menschen hassen, so hassen wir in seinem Bilde etwas, was in uns selber sitzt. Was nicht in uns selber ist, das regt uns nicht auf.',
           added: '4.2.17'
         },
         {
+          id: 1,
           book: books.demian,
           content: 'Test 2',
           added: '4.2.17'
         },
         {
+          id: 2,
           book: books.derFall,
           content: 'Gewiss sah ich mein Versagen immer ein und bedauerte es. Und doch fuhr ich fort, es mit recht verdienstlicher Beharrlichkeit zu vergessen. Über die Mitmenschen hingegen saß ich in meinem Herzen unablässig zu Gericht. Das finden Sie sicher empörend? Sie denken vielleicht, es sei nicht logisch? Es geht aber nicht darum, logisch zu sein.  Es geht darum, zwischen den Maschen hindurchzuschlüpfen, und vor allem, o ja, vor allem darum, sich dem Urteil zu entziehen. Ich sage nicht, sich der Strafe zu entziehen, denn die Strafe ohne Urteil ist erträglich. Sie hat übrigens einen Namen, der für unsere Unschuld bürgt: das Unglück.',
           added: '4.2.17'
         },
         {
+          id: 3,
           book: books.derFall,
           content: 'Lächeln Sie nicht, diese Wahrheit ist nicht so selbstverständlich, wie sie scheint. Selbstverständliche Wahrheiten nent man die, die man zuletzt entdeckt hat, das ist alles.',
           added: '4.2.17'
         },
         {
+          id: 4,
           book: books.derFall,
           content: 'Wissen Sie zum Beispiel, warum man ihn gekreuzigt hat, ihn, an den Sie jetzt vielleicht denken? Nun, dafür gab es eine Menge Gründe. Es fehlt nie an Gründen, einen Menschen umzubringen. Im Gegenteil, es ist unmöglich sein Weiterleben zu rechtfertigen.',
           added: '4.2.17'
@@ -96,11 +98,22 @@
         displayedQuotes: quotes,
         bookFilter: null,
         authorFilter: null,
-        selectedQuote: quotes[0]
+        selectedQuote: null,
+        copy: {
+          success: null,
+          error: null
+        },
       }
     },
     methods: {
-      updateDisplayedQuotes: function () {
+      quoteLink: function (quote) {
+        this.$router.push({ path: '/', query: { quoteId: quote.id }})
+        return window.location.href;
+      },
+      quoteAsCopy: function (quote) {
+        return `"${quote.content}" - ${quote.book.title}, ${quote.book.author.name}`
+      },
+      filterDisplayedQuotes: function () {
         var filteredQuotes = this.quotes;
         let query = {}
         if (this.authorFilter) {
@@ -122,10 +135,10 @@
     },
     watch: {
       authorFilter: function (oldAuthorFilter, newAuthorFilter) {
-        this.updateDisplayedQuotes()
+        this.filterDisplayedQuotes()
       },
       bookFilter: function (oldAuthorFilter, newAuthorFilter) {
-        this.updateDisplayedQuotes()
+        this.filterDisplayedQuotes()
       }
     }
   }
