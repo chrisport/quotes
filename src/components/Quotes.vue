@@ -120,14 +120,14 @@
           query.author = this.authorFilter
           const af = this.authorFilter
           filteredQuotes = filteredQuotes.filter(function (q) {
-            return q.book.author.name.includes(af)
+            return q.book.author.name.toLowerCase().includes(af.toLowerCase())
           })
         }
         if (this.bookFilter) {
           query.book = this.authorFilter
           const bf = this.bookFilter
           filteredQuotes = filteredQuotes.filter(function (q) {
-            return q.book.title.includes(bf)
+            return q.book.title.toLowerCase().includes(bf.toLowerCase())
           })
         }
         this.displayedQuotes = filteredQuotes
@@ -187,6 +187,7 @@
     float: right;
     display: inline-block;
     margin-top: -0.5em;
+    padding-right: 0.2em
   }
 
   .icon-big {
