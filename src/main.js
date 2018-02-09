@@ -5,12 +5,14 @@ import App from './App'
 import router from './router'
 import BootstrapVue from 'bootstrap-vue'
 import VueClipboard from 'vue-clipboard2'
+import * as Datastore from './utils/datastore'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'font-awesome/css/font-awesome.css';
 
 Vue.use(VueClipboard)
 Vue.use(BootstrapVue)
+Vue.prototype.$datastore = Datastore
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
