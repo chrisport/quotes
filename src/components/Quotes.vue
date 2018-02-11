@@ -20,18 +20,23 @@ TODO:
     </b-form>
     <ul class='list-group'>
       <li v-for='quote in displayedQuotes'>
-        <div v-on:mouseenter="selectedQuote = quote" v-on:mouseleave="selectedQuote = null">
-          <div class="quote">{{quote.content}}</div>
-          <div class="footer">
+        <div :id="quote.id | quoteDivIdFilter"
+             v-on:mouseenter="hoveredQuoteId = quote.id"
+             v-on:mouseleave="hoveredQuoteId = null"
+             v-on:click="replaceRoute(hoveredQuoteId)"
+             v-bind:class="{ highlight: quote.id == selectedQuoteId }"
+             class="quote-card">
+          <div class="quote-content">{{quote.content}}</div>
+          <div class="quote-card-footer">
             <p class="alignleft"></p>
             <p class="aligncenter">
               - <a v-bind:href='quote.book.author.link' target='_blank'>{{quote.book.author.name}}</a>,
               <a v-bind:href='quote.book.link' target='_blank'>{{quote.book.title}}</a> ({{quote.book.year}})
             </p>
-            <p class="quote-options alignright" v-if="selectedQuote == quote">
+            <p class="quote-options alignright" v-if="hoveredQuoteId == quote.id">
               <b-btn id="copy-button"
-                     v-clipboard:copy="quoteAsCopy(selectedQuote)"><i class="fa fa-copy icon-big"/></b-btn>
-              <b-btn v-clipboard:copy="quoteDeepLink(selectedQuote)"><i class="fa fa-link icon-big"/></b-btn>
+                     v-clipboard:copy="quoteAsCopy(quote)"><i class="fa fa-copy icon-big"/></b-btn>
+              <b-btn v-clipboard:copy="quoteDeepLink(quote.id)"><i class="fa fa-link icon-big"/></b-btn>
             </p>
           </div>
         </div>
@@ -44,18 +49,17 @@ TODO:
   export default {
     name: 'Quotes',
     data () {
+      const query = this.$router.currentRoute.query
+      const hash = this.$router.currentRoute.hash
       const quotes = []
-
       return {
         quotes: quotes,
-        displayedQuotes: quotes,
         filters: {
-          book: null,
-          author: null,
-          quoteId: null
+          book: query.book,
+          author: query.author,
         },
-        selectedQuote: null,
-        query: null,
+        hoveredQuoteId: null,
+        selectedQuoteId: hash ? hash.substr(1) : null,
       }
     },
     async created () {
@@ -65,41 +69,56 @@ TODO:
       }
     },
     methods: {
-      quoteDeepLink: function (quote) {
-        return `${window.location.origin}#${this.$router.currentRoute.path}?quoteId=${quote.id}`
+      quoteDeepLink: function (quoteId) {
+        var queryString = Object.entries(this.filters).filter(val => !!val[1]).map(i => [i[0], encodeURIComponent(i[1])].join('=')).join('&')
+        if (queryString) {
+          queryString = "?" + queryString
+        }
+        return `${window.location.origin}${this.$router.currentRoute.path}${queryString}#${this.quoteDivId(quoteId)}`
       },
       quoteAsCopy: function (quote) {
         return `"${quote.content}" - ${quote.book.title}, ${quote.book.author.name}`
       },
-      filterDisplayedQuotes: function () {
+      quoteDivId(quoteId){
+        return "q" + quoteId
+      },
+      replaceRoute(quoteId){
+        this.$router.replace({
+          path: this.$router.currentRoute.path,
+          query: this.filters,
+          hash: this.quoteDivId(quoteId)
+        })
+      }
+
+    },
+    computed: {
+      displayedQuotes: function () {
         var filteredQuotes = this.quotes;
         if (this.filters.author) {
-          query.author = this.filters.author
           const af = this.filters.author
           filteredQuotes = filteredQuotes.filter(function (q) {
             return q.book.author.name.toLowerCase().includes(af.toLowerCase())
           })
         }
         if (this.filters.book) {
-          query.book = this.filters.book
           const bf = this.filters.book
           filteredQuotes = filteredQuotes.filter(function (q) {
             return q.book.title.toLowerCase().includes(bf.toLowerCase())
           })
         }
-        this.displayedQuotes = filteredQuotes
+        return filteredQuotes
       }
     },
-    watch: {
-      filters: function () {
-        this.filterDisplayedQuotes()
+    filters: {
+      quoteDivIdFilter(quoteId){
+        return "q" + quoteId
       }
     }
   }
 </script>
 
 <!-- Add 'scoped' attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="less" scoped>
   hr {
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -112,7 +131,7 @@ TODO:
     padding: 0;
   }
 
-  .quote {
+  .quote-content {
     font-size: 1.3em;
     max-width: 100%;
     margin-bottom: 1em;;
@@ -133,8 +152,12 @@ TODO:
     color: #1b402a;
   }
 
-  .footer {
+  .quote-card-footer {
     min-height: 3em;
+  }
+
+  .icon-big {
+    font-size: 1em;
   }
 
   .quote-options {
@@ -144,8 +167,16 @@ TODO:
     padding-right: 0.2em
   }
 
-  .icon-big {
-    font-size: 1em;
+  .quote-card {
+    margin: 1em;
+    padding: 2em;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+  }
+
+  .highlight {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border: 2px solid forestgreen;
   }
 
   .alignleft {
