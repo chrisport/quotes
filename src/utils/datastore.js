@@ -1,8 +1,10 @@
-/**
- * Created by christophportmann on 2/9/18.
- */
+export async function getQuote(quoteId) {
+  return getQuotes().filter(function (quote) {
+    return quote.id == quoteId
+  })
+}
 
-export async function getQuotes(){
+export async function getQuotes() {
   const authors = {
     hesse: {
       link: 'https://de.wikipedia.org/wiki/Hermann_Hesse',
