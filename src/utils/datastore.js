@@ -47,12 +47,7 @@ export async function getQuotes() {
       book: books.derFall,
       content: 'Lächeln Sie nicht, diese Wahrheit ist nicht so selbstverständlich, wie sie scheint. Selbstverständliche Wahrheiten nent man die, die man zuletzt entdeckt hat, das ist alles.',
       added: '4.2.17'
-    },
-    {
-      id: 3,
-      book: books.derFall,
-      content: 'Wissen Sie zum Beispiel, warum man ihn gekreuzigt hat, ihn, an den Sie jetzt vielleicht denken? Nun, dafür gab es eine Menge Gründe. Es fehlt nie an Gründen, einen Menschen umzubringen. Im Gegenteil, es ist unmöglich sein Weiterleben zu rechtfertigen.',
-      added: '4.2.17'
-    }]
+    }
+   ]
   return quotes
 }
