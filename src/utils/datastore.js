@@ -28,6 +28,12 @@ export async function getQuotes() {
       link: 'https://de.wikipedia.org/wiki/Der_Fall_(Roman)',
       year: 1956
     },
+    mythosDesSisyphos: {
+      title: 'Der Mythos des Sisyphos',
+      author: authors.camus,
+      link: 'https://de.wikipedia.org/wiki/Der_Mythos_des_Sisyphos',
+      year: 1942
+    },
   }
   const quotes = [
     {
@@ -47,6 +53,12 @@ export async function getQuotes() {
       book: books.derFall,
       content: 'Lächeln Sie nicht, diese Wahrheit ist nicht so selbstverständlich, wie sie scheint. Selbstverständliche Wahrheiten nent man die, die man zuletzt entdeckt hat, das ist alles.',
       added: '4.2.17'
+    },
+    {
+      id: 3,
+      book: books.mythosDesSisyphos,
+      content: '[...] die Bewegungen zu bezeichnen, mit der ein Denken sich selbst negiert und danach strebt, in seiner Verneinung über sich hinauszugehen. Für die Existenzialisten ist die Verneinung ihr Gott.',
+      added: '19.3.17'
     }
    ]
   return quotes
