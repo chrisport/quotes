@@ -5,7 +5,8 @@ all: build
 build:
 	npm run-script build
 
-deploy:
+dev:
+	npm run dev
 
 deploy:
 	npm run-script build
